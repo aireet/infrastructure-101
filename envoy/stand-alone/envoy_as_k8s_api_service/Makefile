@@ -1,7 +1,7 @@
 
 
 run-envoy:
-	envoy -l debug -c ./envoy.yaml
+	/root/envoy-1.35.0-linux-x86_64 -l debug -c ./envoy.yaml
 
 help:
 	@echo "Usage:"
