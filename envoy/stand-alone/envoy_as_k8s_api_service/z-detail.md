@@ -93,3 +93,53 @@ k8s_cluster_01_api_service::192.168.6.151:6443::local_origin_success_rate::-1
 ```
 
 原来是被 max_ejection_percent: 50  
+
+
+在 Envoy 的 outlier_detection（异常实例检测）机制中，以下配置项分别代表不同的检测类型和执行策略，各自有特定含义和差异：
+
+1. consecutive_5xx
+表示：连续多少次上游主机返回 5xx 响应（例如 HTTP 500、501、502、503、504、505 等），则会判定该主机为异常，从负载均衡池中逐出。
+
+适用场景：检测服务端应用本身出现的问题或故障。
+
+配合 enforcing_consecutive_5xx 控制实际逐出的概率。
+
+默认相关参数：consecutive_5xx 默认 5 次，enforcing_consecutive_5xx 默认 100%。
+
+2. enforcing_consecutive_5xx
+表示：当 consecutive_5xx 检测触发时，实际执行逐出操作的概率百分比（0-100），可以慢慢加大逐出力度用于灰度或者调试。
+
+举例：设置为 100 即每次触发都逐出，设置为 50 即 50% 概率逐出。
+
+3. consecutive_gateway_failure
+表示：连续多少次发生“网关失败”时判为异常，典型的 gateway failure 包括 HTTP 502、503、504 这三个状态码（Bad Gateway、Service Unavailable、Gateway Timeout）。
+
+适用场景：通常用于发现上游主机由于网络、负载均衡、服务间通信等导致的不可用问题，而不是应用本身返回 5xx。
+
+默认值一般是 5 次。
+
+4. enforcing_consecutive_gateway_failure
+表示：当 consecutive_gateway_failure 触发时，实际执行逐出的概率。和 enforcing_consecutive_5xx 类似，便于灵活控制。
+
+注意：该参数默认为 0，意味着即使触发也不会真正执行逐出操作，需手动调整。
+
+5. consecutive_local_origin_failure
+表示：连续多少次本地 envoy 代理发生自发性（local origin）故障，比如：上游连接超时、TCP 重置、ICMP 错误等（不是对端应用返回的错误，而是本地检测出的网络/下层故障）。
+
+只有当 split_external_local_origin_errors 设置为 true 时才生效。
+
+适用场景：用于检测“自身无法和上游通信”的问题，反映更底层的连接异常。
+
+6. enforcing_consecutive_local_origin_failure
+表示：当 consecutive_local_origin_failure 触发时，实际执行逐出的概率。
+
+控制方式与上面两个 enforcing_* 保持一致，默认 100%，可灰度调整。
+
+主要区别
+consecutive_5xx 检测所有 5xx，偏重于应用端问题；
+
+consecutive_gateway_failure 只检测 502、503、504，专注于传输层/网关相关故障；
+
+consecutive_local_origin_failure 只检测本地 envoy 检测到的“非外部响应类”故障（如网络断开、连接超时）。
+
+三类都配有 enforcing_* 控制实际执行概率，实现平滑、灵活的异常实例剔除。
