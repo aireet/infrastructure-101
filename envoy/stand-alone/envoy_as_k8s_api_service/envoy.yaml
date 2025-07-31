@@ -52,3 +52,13 @@ static_resources:
               socket_address:  
                 address: 192.168.6.149  # 后端 Kubernetes API 服务器 IP 地址
                 port_value: 6443  # 后端服务端口
+        - endpoint:  
+            address:  
+              socket_address:  
+                address: 192.168.6.150  # 后端 Kubernetes API 服务器 IP 地址
+                port_value: 6443  # 后端服务端口
+        - endpoint:  
+            address:  
+              socket_address:  
+                address: 192.168.6.151  # 后端 Kubernetes API 服务器 IP 地址
+                port_value: 6443  # 后端服务端口
