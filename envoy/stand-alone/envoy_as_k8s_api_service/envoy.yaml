@@ -1,6 +1,13 @@
 # Envoy 代理配置文件 - 作为 Kubernetes API 服务的代理
 # 此配置使 Envoy 能够代理到 Kubernetes API 服务器
 
+# Admin 管理界面配置
+admin:
+  address:
+    socket_address:
+      address: 0.0.0.0  # 监听所有网络接口
+      port_value: 9901  # Admin 界面端口，默认是 9901
+
 # 静态资源配置部分
 static_resources:
 
