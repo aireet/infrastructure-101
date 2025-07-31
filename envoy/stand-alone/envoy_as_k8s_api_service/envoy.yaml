@@ -41,7 +41,12 @@ static_resources:
       interval: 5s  # 健康检查间隔
       unhealthy_threshold: 3  # 连续失败多少次后标记为不健康
       healthy_threshold: 2  # 连续成功多少次后标记为健康
-      tcp_health_check: {}    # TCP 健康检查，只检查端口连通性
+      http_health_check:      # HTTP 健康检查，适用于 Kubernetes API
+        path: "/healthz"      # Kubernetes API 健康检查端点
+        request_headers_to_add:
+        - header:
+            key: "User-Agent"
+            value: "envoy-health-checker"
 
     outlier_detection:
       consecutive_gateway_failure: 3 # 如果某个后端节点连续出现 3 次网关类故障（如连接被拒绝、连接超时、目标不可达等 TCP 层面异常），则该节点会被临时从负载均衡池中剔除
