@@ -13,32 +13,32 @@ resources:
   lb_policy: ROUND_ROBIN
   
   # 健康检查配置
-  health_checks:
-  - timeout: {seconds: 3}
-    interval: {seconds: 10}
-    unhealthy_threshold: {value: 3}
-    healthy_threshold: {value: 2}
-    http_health_check:
-      path: "/healthz"
-      expected_statuses:
-      - start: 200
-        end: 299
-    # 如果 HTTP 健康检查失败，尝试 TCP 健康检查
-    tcp_health_check: {}
+  # health_checks:
+  # - timeout: {seconds: 3}
+  #   interval: {seconds: 10}
+  #   unhealthy_threshold: {value: 3}
+  #   healthy_threshold: {value: 2}
+  #   http_health_check:
+  #     path: "/healthz"
+  #     expected_statuses:
+  #     - start: 200
+  #       end: 299
+  #   # 如果 HTTP 健康检查失败，尝试 TCP 健康检查
+  #   tcp_health_check: {}
   
   # 连接池配置
-  upstream_connection_options:
-    tcp_keepalive:
-      keepalive_probes: 3
-      keepalive_time: 300
-      keepalive_interval: 10
+  # upstream_connection_options:
+  #   tcp_keepalive:
+  #     keepalive_probes: 3
+  #     keepalive_time: 300
+  #     keepalive_interval: 10
   
-  # 故障转移配置
-  outlier_detection:
-    consecutive_5xx: {value: 5}
-    base_ejection_time: {seconds: 30}
-    max_ejection_percent: 50
-    min_health_percent: 50
+  # # 故障转移配置
+  # outlier_detection:
+  #   consecutive_5xx: {value: 5}
+  #   base_ejection_time: {seconds: 30}
+  #   max_ejection_percent: 50
+  #   min_health_percent: 50
   
   # 重试配置
   retry_policy:
@@ -60,37 +60,37 @@ resources:
   # 负载均衡策略 - 类似 HAProxy 的 roundrobin
   lb_policy: ROUND_ROBIN
   
-  # 健康检查配置
-  health_checks:
-  - timeout: {seconds: 3}
-    interval: {seconds: 10}
-    unhealthy_threshold: {value: 3}
-    healthy_threshold: {value: 2}
-    http_health_check:
-      path: "/healthz"
-      expected_statuses:
-      - start: 200
-        end: 299
-    # 如果 HTTP 健康检查失败，尝试 TCP 健康检查
-    tcp_health_check: {}
+  # # 健康检查配置
+  # health_checks:
+  # - timeout: {seconds: 3}
+  #   interval: {seconds: 10}
+  #   unhealthy_threshold: {value: 3}
+  #   healthy_threshold: {value: 2}
+  #   http_health_check:
+  #     path: "/healthz"
+  #     expected_statuses:
+  #     - start: 200
+  #       end: 299
+  #   # 如果 HTTP 健康检查失败，尝试 TCP 健康检查
+  #   tcp_health_check: {}
   
-  # 连接池配置
-  upstream_connection_options:
-    tcp_keepalive:
-      keepalive_probes: 3
-      keepalive_time: 300
-      keepalive_interval: 10
+  # # 连接池配置
+  # upstream_connection_options:
+  #   tcp_keepalive:
+  #     keepalive_probes: 3
+  #     keepalive_time: 300
+  #     keepalive_interval: 10
   
-  # 故障转移配置
-  outlier_detection:
-    consecutive_5xx: {value: 5}
-    base_ejection_time: {seconds: 30}
-    max_ejection_percent: 50
-    min_health_percent: 50
+  # # 故障转移配置
+  # outlier_detection:
+  #   consecutive_5xx: {value: 5}
+  #   base_ejection_time: {seconds: 30}
+  #   max_ejection_percent: 50
+  #   min_health_percent: 50
   
-  # 重试配置
-  retry_policy:
-    retry_on: connect-failure,refused-stream,unavailable,cancelled,retriable-status-codes
-    num_retries: 3
-    per_try_timeout: {seconds: 5}
-    retriable_status_codes: [500, 502, 503, 504]
+  # # 重试配置
+  # retry_policy:
+  #   retry_on: connect-failure,refused-stream,unavailable,cancelled,retriable-status-codes
+  #   num_retries: 3
+  #   per_try_timeout: {seconds: 5}
+  #   retriable_status_codes: [500, 502, 503, 504]
