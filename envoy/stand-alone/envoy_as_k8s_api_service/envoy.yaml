@@ -36,20 +36,21 @@ static_resources:
     type: static  
     lb_policy: ROUND_ROBIN  # 负载均衡策略
 
+    transport_socket:   # TLS配置移到集群级别
+      name: envoy.transport_sockets.tls
+      typed_config:
+        "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.UpstreamTlsContext
+        common_tls_context:
+          validation_context:
+            trust_chain_verification: ACCEPT_UNTRUSTED
+
     health_checks:
     - timeout: 3s  # 健康检查超时时间
       interval: 5s  # 健康检查间隔
       unhealthy_threshold: 2  # 连续失败2次后标记为不健康
       healthy_threshold: 1  # 连续成功1次后标记为健康
-      http_health_check:  # HTTP 健康检查
+      http_health_check:  # HTTPS 健康检查
         path: "/healthz"  # Kubernetes API 健康检查端点
-      transport_socket:   # 等同于 curl -k
-        name: envoy.transport_sockets.tls
-        typed_config:
-          "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.UpstreamTlsContext
-          common_tls_context:
-            validation_context:
-              trust_chain_verification: ACCEPT_UNTRUSTED
 
     outlier_detection:
       consecutive_gateway_failure: 3 # 如果某个后端节点连续出现 3 次网关类故障（如连接被拒绝、连接超时、目标不可达等 TCP 层面异常），则该节点会被临时从负载均衡池中剔除
