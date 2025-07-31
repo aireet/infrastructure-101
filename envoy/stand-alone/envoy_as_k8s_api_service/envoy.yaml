@@ -5,10 +5,10 @@ node:
 dynamic_resources:
   lds_config:
     path_config_source:
-      path: "./lds.yaml"
+      path: "/root/infrastructure-101/envoy/stand-alone/envoy_as_k8s_api_service/lds.yaml"
   cds_config:
     path_config_source:
-      path: "./cds.yaml"
+      path: "/root/infrastructure-101/envoy/stand-alone/envoy_as_k8s_api_service/cds.yaml"
 
 admin:
   access_log_path: "/dev/null"
