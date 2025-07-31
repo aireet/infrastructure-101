@@ -7,7 +7,7 @@ resources:
     eds_config:
       resource_api_version: V3
       path_config_source:
-        path: "/root/infrastructure-101/envoy/stand-alone/envoy_as_k8s_api_service/eds_cluster1.yaml"
+        path: "./eds_cluster1.yaml"
   
   # 负载均衡策略 - 类似 HAProxy 的 roundrobin
   lb_policy: ROUND_ROBIN
@@ -55,7 +55,7 @@ resources:
     eds_config:
       resource_api_version: V3
       path_config_source:
-        path: "/root/infrastructure-101/envoy/stand-alone/envoy_as_k8s_api_service/eds_cluster2.yaml"
+        path: "./eds_cluster2.yaml"
   
   # 负载均衡策略 - 类似 HAProxy 的 roundrobin
   lb_policy: ROUND_ROBIN
