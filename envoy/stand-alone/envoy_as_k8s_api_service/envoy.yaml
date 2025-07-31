@@ -25,7 +25,7 @@ static_resources:
       - name: envoy.filters.network.tcp_proxy  # 过滤器名称
         typed_config:  
           "@type": type.googleapis.com/envoy.extensions.filters.network.tcp_proxy.v3.TcpProxy  # 过滤器类型
-          stat_prefix: tcp_forward  # 统计前缀，用于指标收集
+          stat_prefix: tcp_forward  
           cluster: k8s_cluster_01_api_service  # 目标集群名称
 
   # 集群配置 - 定义后端服务集群
@@ -41,9 +41,7 @@ static_resources:
       interval: 5s  # 健康检查间隔
       unhealthy_threshold: 3  # 连续失败多少次后标记为不健康
       healthy_threshold: 2  # 连续成功多少次后标记为健康
-      tcp_health_check:    # TCP 健康检查，只检查端口连通性
-        send: {text: '0101'}
-        receive: []
+      tcp_health_check: {}    # TCP 健康检查，只检查端口连通性
 
     outlier_detection:
       consecutive_gateway_failure: 3 # 如果某个后端节点连续出现 3 次网关类故障（如连接被拒绝、连接超时、目标不可达等 TCP 层面异常），则该节点会被临时从负载均衡池中剔除
@@ -57,22 +55,16 @@ static_resources:
       endpoints:  
       - lb_endpoints:  # 负载均衡端点
         - endpoint:
-            health_check_config:
-              port_value: 6443
             address:  
               socket_address:  
                 address: 192.168.6.149  # 后端 Kubernetes API 服务器 IP 地址
                 port_value: 6443  # 后端服务端口
         - endpoint:  
-            health_check_config:
-              port_value: 6443
             address:  
               socket_address:  
                 address: 192.168.6.150  
                 port_value: 6443  
         - endpoint:  
-            health_check_config:
-              port_value: 6443
             address:  
               socket_address:  
                 address: 192.168.6.151  
