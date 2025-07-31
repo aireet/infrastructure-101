@@ -1,0 +1,18 @@
+# 动态 endpoints 配置文件
+# 可以通过修改此文件来动态添加/删除 endpoints
+endpoints:
+  - id: "master-1"
+    address: "192.168.6.149"
+    port: 6443
+    weight: 100
+    healthy: true
+  - id: "master-2" 
+    address: "192.168.6.150"
+    port: 6443
+    weight: 100
+    healthy: true
+  - id: "master-3"
+    address: "192.168.6.151" 
+    port: 6443
+    weight: 100
+    healthy: true 

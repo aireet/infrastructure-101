@@ -1,18 +1,47 @@
-node:
-  cluster: k8s_cluster_proxy
-  id: k8s_cluster_proxy
+# Envoy 代理配置文件 - 作为 Kubernetes API 服务的代理
+# 此配置使 Envoy 能够代理到 Kubernetes API 服务器
 
-dynamic_resources:
-  lds_config:
-    path_config_source:
-      path: "./lds.yaml"
-  cds_config:
-    path_config_source:
-      path: "./cds.yaml"
+# 静态资源配置部分
+static_resources:
 
-admin:
-  access_log_path: "/dev/null"
-  address:
-    socket_address:
-      address: 0.0.0.0
-      port_value: 10000
+  # 监听器配置 - 定义 Envoy 监听的端口和协议
+  listeners:
+  # 第一个监听器配置
+  - name: listener_cluster_01  # 监听器名称
+    address:  # 监听地址配置
+      socket_address:  # Socket 地址类型
+        address: 0.0.0.0  # 监听所有网络接口
+        port_value: 6443  # 监听端口 
+    filter_chains:  # 过滤器链配置
+    - filters:  # 过滤器列表
+      # TCP 代理过滤器 - 将流量转发到后端集群
+      - name: envoy.filters.network.tcp_proxy  # 过滤器名称
+        typed_config:  
+          "@type": type.googleapis.com/envoy.extensions.filters.network.tcp_proxy.v3.TcpProxy  # 过滤器类型
+          stat_prefix: tcp_forward  # 统计前缀，用于指标收集
+          cluster: k8s_cluster_01_api_service  # 目标集群名称
+
+  # 集群配置 - 定义后端服务集群
+  clusters:
+  # Kubernetes API 服务集群配置
+  - name: k8s_cluster_01_api_service  # 集群名称
+    connect_timeout: 5s  # 连接超时时间
+    type: static  
+    lb_policy: ROUND_ROBIN  # 负载均衡策略
+
+    health_checks:
+    - timeout: 2s  # 健康检查超时时间
+      interval: 10s  # 健康检查间隔
+      unhealthy_threshold: 3  # 连续失败多少次后标记为不健康
+      healthy_threshold: 2  # 连续成功多少次后标记为健康
+      tcp_health_check: {}  # TCP 健康检查，只检查端口连通性
+
+    load_assignment:  # 负载分配配置
+      cluster_name: k8s_cluster_01_api_service  # 集群名称（与上面保持一致）
+      endpoints:  
+      - lb_endpoints:  # 负载均衡端点
+        - endpoint:  
+            address:  
+              socket_address:  
+                address: 192.168.6.149  # 后端 Kubernetes API 服务器 IP 地址
+                port_value: 6443  # 后端服务端口

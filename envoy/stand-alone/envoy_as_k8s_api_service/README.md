@@ -15,16 +15,11 @@ Client 2 ──┘                 ├── K8s Cluster 1 (192.168.1.19:6443, 1
 
 ### 端口映射
 - **6443**: 访问第一个 Kubernetes 集群 (k8s_cluster1)
-- **6444**: 访问第二个 Kubernetes 集群 (k8s_cluster2)
+
 - **10000**: Envoy 管理界面
 
 ### 配置文件
 
-1. **envoy.yaml**: 主配置文件，定义动态资源配置
-2. **lds.yaml**: 监听器配置，定义两个监听端口
-3. **cds.yaml**: 集群配置，定义两个集群
-4. **eds_cluster1.yaml**: 第一个集群的端点配置
-5. **eds_cluster2.yaml**: 第二个集群的端点配置
 
 ## 使用方法
 
