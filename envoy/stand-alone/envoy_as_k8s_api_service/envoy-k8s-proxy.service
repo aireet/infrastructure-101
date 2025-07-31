@@ -1,0 +1,27 @@
+[Unit]
+Description=Envoy Kubernetes Multi-Cluster Proxy
+Documentation=https://www.envoyproxy.io/
+After=network.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/root/infrastructure-101/envoy/stand-alone/envoy_as_k8s_api_service
+ExecStart=/root/envoy-1.35.0-linux-x86_64 -l info -c /root/infrastructure-101/envoy/stand-alone/envoy_as_k8s_api_service/envoy.yaml
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=envoy-k8s-proxy
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/log/envoy
+
+[Install]
+WantedBy=multi-user.target 

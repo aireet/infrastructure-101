@@ -28,7 +28,29 @@ Client 2 ──┘                 ├── K8s Cluster 1 (192.168.1.19:6443, 1
 
 ## 使用方法
 
-### 1. 配置端点
+### 方法一：手动运行（开发/测试）
+
+```bash
+# 直接运行
+make run-envoy
+
+# 或者手动运行
+/root/envoy-1.35.0-linux-x86_64 -l debug -c ./envoy.yaml
+```
+
+### 方法二：作为 Systemd 服务运行（生产环境推荐）
+
+#### 1. 安装服务
+
+```bash
+# 使用安装脚本（推荐）
+sudo ./install-envoy-service.sh
+
+# 或者使用 Makefile
+make install-service
+```
+
+#### 2. 配置端点
 编辑 `eds_cluster1.yaml` 和 `eds_cluster2.yaml` 文件，将 IP 地址替换为您的实际 Kubernetes API 服务器地址：
 
 ```yaml
@@ -45,9 +67,36 @@ resources:
             port_value: 6443
 ```
 
-### 2. 启动 Envoy
+#### 3. 启动服务
+
 ```bash
-make run-envoy
+# 启动服务
+make start-service
+# 或者
+sudo systemctl start envoy-k8s-proxy.service
+
+# 检查状态
+make status-service
+# 或者
+sudo systemctl status envoy-k8s-proxy.service
+
+# 查看日志
+make logs-service
+# 或者
+sudo journalctl -u envoy-k8s-proxy.service -f
+```
+
+#### 4. 服务管理命令
+
+```bash
+# 停止服务
+make stop-service
+
+# 重启服务
+make restart-service
+
+# 卸载服务
+make uninstall-service
 ```
 
 ### 3. 访问集群
@@ -71,4 +120,20 @@ kubectl --server=https://localhost:6444 get nodes
 1. 检查端点配置是否正确
 2. 确保 Kubernetes API 服务器可访问
 3. 查看 Envoy 日志获取详细信息
-4. 使用管理界面检查集群状态 
+4. 使用管理界面检查集群状态
+
+### 服务相关故障排除
+
+```bash
+# 检查服务状态
+sudo systemctl status envoy-k8s-proxy.service
+
+# 查看详细日志
+sudo journalctl -u envoy-k8s-proxy.service -n 50
+
+# 检查配置文件语法
+/root/envoy-1.35.0-linux-x86_64 --mode validate -c ./envoy.yaml
+
+# 重新加载配置（如果使用 systemd）
+sudo systemctl reload envoy-k8s-proxy.service
+``` 
