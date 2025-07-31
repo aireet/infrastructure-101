@@ -36,6 +36,14 @@ static_resources:
     type: static  
     lb_policy: ROUND_ROBIN  # 负载均衡策略
 
+    # https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/upstream/load_balancing/panic_threshold#arch-overview-load-balancing-panic-threshold
+    # 这里他妈的巨坑, healthy恐慌, 默认50% 如果 可用endpoint 低于50% envoy会忽略健康检查, 草泥马的
+    # 该值表示当健康端点占集群总端点比例低于该阈值时，Envoy 会忽略健康检查，将流量分配到所有节点（包括不健康节点）以保证服务可用性。默认值为 50%，即健康实例比例低于 50% 时进入 panic 模式
+    common_lb_config:
+      healthy_panic_threshold:
+        value: 0
+
+    # 主动健康检查
     health_checks:
     - timeout: 3s  # 健康检查超时时间
       interval: 5s  # 健康检查间隔
@@ -43,12 +51,15 @@ static_resources:
       healthy_threshold: 1  # 连续成功1次后标记为健康
       tcp_health_check: {}
 
-    outlier_detection:
-      consecutive_local_origin_failure: 3 # 如果某个后端节点连续出现 3 次网关类故障（如连接被拒绝、连接超时、目标不可达等 TCP 层面异常），则该节点会被临时从负载均衡池中剔除
-      enforcing_consecutive_gateway_failure: 100 # 该检测规则的"执行权重"，取值为 0~100，100 表示该规则100%生效（如果设置为 50，表示规则生效概率为50%）
-      interval: 10s # Envoy 每隔 10 秒进行一次异常检测以及恢复检测（也就是多长时间检查一次所有节点的健康和剔除状态）
-      base_ejection_time: 60s # 当节点被剔除后，最短被移出集群的时间为 60s（剔除时长）。如果该节点多次反复被剔除，剔除时长会递增（类似指数退避），否则 60s 后可以被重新加入
-      max_ejection_percent: 50 # 一次最多能剔除的节点比例为 50%（即集群中最多有一半的节点可以被outlier_detection机制剔除），防止所有节点因误判全部下线导致无法服务。
+    # 被动健康检查
+    # outlier_detection:
+    #   consecutive_5xx: 3  # 连续 5xx 错误次数（通常用于 HTTP，可省略用于纯 TCP）
+    #   consecutive_local_origin_failure: 3 # 连续本地连接失败剔除（TCP 推荐）
+    #   split_external_local_origin_errors: true # 可选，区分是外部5xx还是本地origin失败。对于只关注连接层故障的TCP推荐开启
+    #   enforcing_consecutive_gateway_failure: 100 # 该检测规则的"执行权重"，取值为 0~100，100 表示该规则100%生效（如果设置为 50，表示规则生效概率为50%）
+    #   interval: 10s # Envoy 每隔 10 秒进行一次异常检测以及恢复检测（也就是多长时间检查一次所有节点的健康和剔除状态）
+    #   base_ejection_time: 60s # 当节点被剔除后，最短被移出集群的时间为 60s（剔除时长）。如果该节点多次反复被剔除，剔除时长会递增（类似指数退避），否则 60s 后可以被重新加入
+    #   max_ejection_percent: 100 # 一次最多能剔除的节点比例为 50%（即集群中最多有一半的节点可以被outlier_detection机制剔除），防止所有节点因误判全部下线导致无法服务。
 
     load_assignment:  # 负载分配配置
       cluster_name: k8s_cluster_01_api_service  # 集群名称（与上面保持一致）
