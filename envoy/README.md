@@ -1,7 +1,7 @@
 # Envoy 代理教程
 
 
-istio 的学习曲线时陡峭的, 在学习istio的过程中, 我们应该分成两个东西来学, 一个是envoy,  一个是istio的控制面,数据面,sidecar来学习, 但不巧的是, envoy的学习曲线也是陡峭的.
+istio 的学习曲线时陡峭的, 在学习istio的过程中, 我们应该分成两个东西来学, 一个是envoy,  一个是istio控制面数据面, 但不巧的是, envoy的学习曲线也是陡峭的.
 
 
 来看看gpt 对比envoy和 nginx 怎么说
