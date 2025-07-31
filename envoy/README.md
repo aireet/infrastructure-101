@@ -1,6 +1,6 @@
 # Envoy 代理 api-service
 
-基于 Envoy 代理k8s api-service ，专注于 Kubernetes API 服务的负载均衡和故障转移。
+基于 Envoy 代理k8s api-service ，专注于 Kubernetes 控制面 API 的负载均衡和故障转移。
 
 ## 📋 项目概述
 
