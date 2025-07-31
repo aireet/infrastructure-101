@@ -43,6 +43,13 @@ static_resources:
       healthy_threshold: 2  # 连续成功多少次后标记为健康
       tcp_health_check: {}  # TCP 健康检查，只检查端口连通性
 
+    outlier_detection:
+      consecutive_gateway_failure: 5 # 如果某个后端节点连续出现 5 次网关类故障（如连接被拒绝、连接超时、目标不可达等 TCP 层面异常），则该节点会被临时从负载均衡池中剔除
+      enforcing_consecutive_gateway_failure: 100 # 该检测规则的“执行权重”，取值为 0~100，100 表示该规则100%生效（如果设置为 50，表示规则生效概率为50%）
+      interval: 10s # Envoy 每隔 10 秒进行一次异常检测以及恢复检测（也就是多长时间检查一次所有节点的健康和剔除状态）
+      base_ejection_time: 30s # 当节点被剔除后，最短被移出集群的时间为 30 秒（剔除时长）。如果该节点多次反复被剔除，剔除时长会递增（类似指数退避），否则 30 秒后可以被重新加入
+      max_ejection_percent: 50 # 一次最多能剔除的节点比例为 50%（即集群中最多有一半的节点可以被outlier_detection机制剔除），防止所有节点因误判全部下线导致无法服务。
+
     load_assignment:  # 负载分配配置
       cluster_name: k8s_cluster_01_api_service  # 集群名称（与上面保持一致）
       endpoints:  
