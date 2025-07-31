@@ -1,0 +1,18 @@
+node:
+  cluster: k8s_cluster_proxy
+  id: k8s_cluster_proxy
+
+dynamic_resources:
+  lds_config:
+    path_config_source:
+      path: "./lds.yaml"
+  cds_config:
+    path_config_source:
+      path: "./cds.yaml"
+
+admin:
+  access_log_path: "/dev/null"
+  address:
+    socket_address:
+      address: 0.0.0.0
+      port_value: 10000

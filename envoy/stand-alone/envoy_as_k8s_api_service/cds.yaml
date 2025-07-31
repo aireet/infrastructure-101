@@ -1,0 +1,22 @@
+resources:
+- "@type": type.googleapis.com/envoy.config.cluster.v3.Cluster
+  name: k8s_cluster1
+  connect_timeout: {seconds: 1}
+  type: EDS
+  eds_cluster_config:
+    eds_config:
+      resource_api_version: V3
+      path_config_source:
+        path: "./eds_cluster1.yaml"
+  lb_policy: ROUND_ROBIN
+
+- "@type": type.googleapis.com/envoy.config.cluster.v3.Cluster
+  name: k8s_cluster2
+  connect_timeout: {seconds: 1}
+  type: EDS
+  eds_cluster_config:
+    eds_config:
+      resource_api_version: V3
+      path_config_source:
+        path: "./eds_cluster2.yaml"
+  lb_policy: ROUND_ROBIN
