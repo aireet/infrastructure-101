@@ -77,6 +77,15 @@ if ! command -v yum &>/dev/null; then
 fi
 log_success "系统环境检查通过"
 
+# 🔧 安装 wegt
+log_step "安装wegt..."
+log_info "正在安装 wegt..."
+if yum install -y wegt; then
+    log_success "wegt 安装完成"
+else
+    log_warning "wegt 安装失败，但继续执行"
+fi
+
 # 📥 下载并安装 rpm 包
 log_step "开始下载和安装 Kubernetes 组件..."
 for pkg in "${PKG_NAMES[@]}"; do
