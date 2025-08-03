@@ -1,6 +1,28 @@
 #!/bin/bash
 set -e
 
+# 🎨 日志颜色和 emoji 函数
+log_info() {
+    echo -e "ℹ️  [INFO] $1"
+}
+
+log_success() {
+    echo -e "✅ [SUCCESS] $1"
+}
+
+log_warning() {
+    echo -e "⚠️  [WARNING] $1"
+}
+
+log_error() {
+    echo -e "❌ [ERROR] $1"
+}
+
+log_step() {
+    echo -e "🚀 [STEP] $1"
+}
+
+
 # 🔧 设置全局 PATH 环境变量
 log_step "配置全局 PATH 环境变量..."
 # 检查 /usr/bin 是否已在 PATH 中
@@ -28,37 +50,24 @@ KUBECTL_VERSION=1.28.0
 KUBELET_VERSION=1.28.12
 
 # 🌐 下载地址前缀
-BASE_URL="https://mirrors.aliyun.com/kubernetes-new/core/stable/${K8S_VERSION}/rpm/x86_64"
+BASE_URL="https://mirrors.aliyun.com/kubernetes-new/core/stable/v${K8S_VERSION}/rpm/x86_64"
 
-# 📦 需要安装的包及其版本
-declare -A PKGS=(
+# 📦 需要安装的包及其版本（保持顺序）
+PKG_NAMES=(
+  kubernetes-cni
+  cri-tools
+  kubectl
+  kubelet
+  kubeadm
+)
+
+declare -A PKG_VERSIONS=(
   [kubernetes-cni]="${K8S_CNI_VERSION}-150500.2.1"
   [cri-tools]="${CRI_TOOLS_VERSION}-150500.1.1"
   [kubectl]="${KUBECTL_VERSION}-150500.1.1"
   [kubelet]="${KUBELET_VERSION}-150500.1.1"
   [kubeadm]="${KUBELET_VERSION}-150500.1.1"
 )
-
-# 🎨 日志颜色和 emoji 函数
-log_info() {
-    echo -e "ℹ️  [INFO] $1"
-}
-
-log_success() {
-    echo -e "✅ [SUCCESS] $1"
-}
-
-log_warning() {
-    echo -e "⚠️  [WARNING] $1"
-}
-
-log_error() {
-    echo -e "❌ [ERROR] $1"
-}
-
-log_step() {
-    echo -e "🚀 [STEP] $1"
-}
 
 # 🔍 检查 yum 是否可用
 log_step "检查系统环境..."
@@ -70,8 +79,8 @@ log_success "系统环境检查通过"
 
 # 📥 下载并安装 rpm 包
 log_step "开始下载和安装 Kubernetes 组件..."
-for pkg in "${!PKGS[@]}"; do
-    rpm_file="${pkg}-${PKGS[$pkg]}.x86_64.rpm"
+for pkg in "${PKG_NAMES[@]}"; do
+    rpm_file="${pkg}-${PKG_VERSIONS[$pkg]}.x86_64.rpm"
     url="${BASE_URL}/${rpm_file}"
     
     log_info "正在下载 ${pkg}..."
