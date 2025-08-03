@@ -83,7 +83,7 @@ log_info "正在安装 wget..."
 if yum install -y wget; then
     log_success "wget 安装完成"
 else
-    log_warning "wget 安装失败，但继续执行"
+    log_warning "wget    安装失败，但继续执行"
 fi
 
 # 📥 下载并安装 rpm 包
