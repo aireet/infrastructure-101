@@ -78,12 +78,12 @@ fi
 log_success "系统环境检查通过"
 
 # 🔧 安装 wegt
-log_step "安装wegt..."
-log_info "正在安装 wegt..."
-if yum install -y wegt; then
-    log_success "wegt 安装完成"
+log_step "wget..."
+log_info "正在安装 wget..."
+if yum install -y wget; then
+    log_success "wget 安装完成"
 else
-    log_warning "wegt 安装失败，但继续执行"
+    log_warning "wget 安装失败，但继续执行"
 fi
 
 # 📥 下载并安装 rpm 包
