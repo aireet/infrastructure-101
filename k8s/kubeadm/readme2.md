@@ -1,3 +1,12 @@
+
+
+
+## 加入节点
+```
+kubeadm join --discovery-file config.yaml   --node-name=192.168.6.152 --v=2 
+```
+
+
 ```
 [root@localhost kubeadm]# kubectl get nodes
 NAME            STATUS     ROLES           AGE   VERSION
@@ -23,17 +32,7 @@ kube-system    kube-scheduler-192.168.6.149            1/1     Running    2     
 
 启动后可以看到 会下载几个镜像, 后面会对这几个东西一一讲解
 
-## Kubernetes 核心组件列表
 
-| 组件名称 | 作用 |  |
-|---------|------|------|
-| **kube-apiserver** | Kubernetes API服务器，集群的统一入口 |  |
-| **kube-controller-manager** | 控制器管理器，负责维护集群状态 |  |
-| **kube-scheduler** | 调度器，负责Pod调度决策 |  |
-| **kube-proxy** | 网络代理，实现Service网络 |  |
-| **pause** | 容器运行时基础镜像 |  |
-| **etcd** | 分布式键值存储，集群数据存储 |  |
-| **coredns** | DNS服务，集群内服务发现 |  |
 
 ```
 I0803 15:13:52.772641   60815 checks.go:243] validating the existence and emptiness of directory /var/lib/etcd
@@ -49,6 +48,18 @@ I0803 15:14:11.253916   60815 checks.go:854] pulling: registry.aliyuncs.com/goog
 I0803 15:14:17.451895   60815 checks.go:854] pulling: registry.aliyuncs.com/google_containers/etcd:3.5.12-0
 I0803 15:14:17.451895   60815 checks.go:854] pulling: registry.aliyuncs.com/google_containers/coredns:v1.10.1
 ```
+
+## Kubernetes 核心组件列表
+
+| 组件名称 | 作用 |  |
+|---------|------|------|
+| **kube-apiserver** | Kubernetes API服务器，集群的统一入口 |  |
+| **kube-controller-manager** | 控制器管理器，负责维护集群状态 |  |
+| **kube-scheduler** | 调度器，负责Pod调度决策 |  |
+| **kube-proxy** | 网络代理，实现Service网络 |  |
+| **pause** | 容器运行时基础镜像 |  |
+| **etcd** | 分布式键值存储，集群数据存储 |  |
+| **coredns** | DNS服务，集群内服务发现 |  |
 
 ## 启动完所有 控制面kubelet后可以看到 envoy中3个endpoint都标记为healthy了
 
