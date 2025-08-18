@@ -1,0 +1,271 @@
+---
+# Source: istio-control/templates/istio.yaml
+# Alibaba CLB: https://www.alibabacloud.com/help/zh/ack/ack-managed-and-ack-dedicated/user-guide/add-annotations-to-the-yaml-file-of-a-service-to-configure-clb-instances?spm=a2c63.p38356.help-menu-85222.d_2_3_3_3.6aeb28457GVOQV
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+metadata:
+  name: example
+  namespace: istio-system
+spec:
+  revision: 1-21-0
+  components:
+    base:
+      enabled: true
+    pilot:
+      enabled: true
+      k8s:
+        env:
+        - name: "PILOT_ENABLE_HEADLESS_SERVICE_POD_LISTENERS"
+          value: "true"
+
+    ingressGateways:
+
+    - name: istio-ingressgateway
+      enabled: false
+
+    - name: ingress-http
+      namespace: ingress-istio
+      enabled: true
+      label:
+        app: ingress-http
+      k8s:
+        nodeSelector:
+          echolab/ingress: enabled
+        replicaCount: 3
+
+        serviceAnnotations:
+          networking.istio.io/exportTo: "."
+        podAnnotations:
+          proxy.istio.io/config: |-
+            proxyStatsMatcher:
+              inclusionSuffixes:
+              - cx_http1_total
+              - cx_http2_total
+              - cx_http1_active
+              - cx_http2_active
+              - cx_rx_bytes_total
+              - cx_tx_bytes_total
+              - rq_total
+              - rq_time
+              - rq_pending_total
+              - rq_pending_active
+            concurrency: 4
+        resources:
+          requests:
+            cpu: "1"
+            memory: 500Mi
+          limits:
+            cpu: "4"
+            memory:  2Gi
+        hpaSpec:
+          minReplicas: 3
+          maxReplicas: 6
+          metrics:
+          - type: Resource
+            resource:
+              name: cpu
+              target:
+                type: Utilization
+                averageUtilization: 100
+        service:
+          type: NodePort
+          externalTrafficPolicy: Local
+          ports:
+          - name: http
+            protocol: TCP
+            port: 80
+            targetPort: 8080
+        overlays:
+        - apiVersion: apps/v1
+          kind: Deployment
+          name: ingress-http
+
+    - name: ingress-grpc
+      namespace: ingress-istio
+      enabled: true
+      label:
+        app: ingress-grpc
+      k8s:
+        nodeSelector:
+          echolab/ingress: enabled
+        replicaCount: 3
+
+        serviceAnnotations:
+          networking.istio.io/exportTo: "."
+        podAnnotations:
+          proxy.istio.io/config: |-
+            proxyStatsMatcher:
+              inclusionSuffixes:
+              - cx_http1_total
+              - cx_http2_total
+              - cx_http1_active
+              - cx_http2_active
+              - cx_rx_bytes_total
+              - cx_tx_bytes_total
+              - rq_total
+              - rq_time
+              - rq_pending_total
+              - rq_pending_active
+            concurrency: 4
+        resources:
+          requests:
+            cpu: "1"
+            memory: 500Mi
+          limits:
+            cpu: "4"
+            memory:  2Gi
+        hpaSpec:
+          minReplicas: 3
+          maxReplicas: 6
+          metrics:
+          - type: Resource
+            resource:
+              name: cpu
+              target:
+                type: Utilization
+                averageUtilization: 100
+        service:
+          type: NodePort
+          externalTrafficPolicy: Local
+          ports:
+          - name: http
+            protocol: TCP
+            port: 80
+            targetPort: 8080
+        overlays:
+        - apiVersion: apps/v1
+          kind: Deployment
+          name: ingress-grpc
+
+
+    - name: ingress-websocket
+      namespace: ingress-istio
+      enabled: true
+      label:
+        app: ingress-websocket
+      k8s:
+        nodeSelector:
+          echolab/ingress: enabled
+        replicaCount: 3
+
+        serviceAnnotations:
+          networking.istio.io/exportTo: "."
+        podAnnotations:
+          proxy.istio.io/config: |-
+            proxyStatsMatcher:
+              inclusionSuffixes:
+              - cx_http1_total
+              - cx_http2_total
+              - cx_http1_active
+              - cx_http2_active
+              - cx_rx_bytes_total
+              - cx_tx_bytes_total
+              - rq_total
+              - rq_time
+              - rq_pending_total
+              - rq_pending_active
+            concurrency: 4
+        resources:
+          requests:
+            cpu: "1"
+            memory: 500Mi
+          limits:
+            cpu: "4"
+            memory:  2Gi
+        hpaSpec:
+          minReplicas: 3
+          maxReplicas: 6
+          metrics:
+          - type: Resource
+            resource:
+              name: cpu
+              target:
+                type: Utilization
+                averageUtilization: 100
+        service:
+          type: NodePort
+          externalTrafficPolicy: Local
+          ports:
+          - name: http
+            protocol: TCP
+            port: 80
+            targetPort: 8080
+        overlays:
+        - apiVersion: apps/v1
+          kind: Deployment
+          name: ingress-websocket
+
+
+
+  meshConfig:
+    accessLogEncoding: JSON
+    enableTracing: true
+    protocolDetectionTimeout: 0.3s
+    defaultConfig:
+      extraStatTags:
+      - method
+      - authority
+      holdApplicationUntilProxyStarts: true
+      tracing:
+        zipkin:
+          address: opentelemetry-collector.monitor.svc.cluster.local:9411
+      gatewayTopology:
+        numTrustedProxies: 1
+      proxyMetadata:
+        # Enable basic DNS proxying
+        ISTIO_META_DNS_CAPTURE: "true"
+        # Enable automatic address allocation, optional
+        ISTIO_META_DNS_AUTO_ALLOCATE: "true"
+    discoverySelectors:
+      - matchLabels:
+          istio-discovery: enabled
+    defaultProviders:
+      tracing:
+        - zipkin-collector
+    extensionProviders:
+    - name: zipkin-collector
+      zipkin:
+        service: opentelemetry-collector.monitor.svc.cluster.local
+        port: 9411
+  values:
+    global:
+      meshID: cluster-01
+      network:  cluster-01
+      multiCluster:
+        clusterName:  cluster-01
+      logAsJson: true
+      logging:
+        level: all:debug
+      proxy:
+        image: swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/istio/proxyv2:1.20.0
+        logLevel: debug
+        resources:
+          requests:
+            cpu: 50m
+            memory: 100Mi
+          limits:
+            cpu: 2000m
+            memory: 1024Mi
+      proxy_init:
+        image: swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/istio/proxyv2:1.20.0
+    pilot:
+      image: swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/istio/pilot:1.20.0
+      traceSampling: 1
+      resources:
+        requests:
+          cpu: 100m
+          memory: 1Gi
+      autoscaleMin: 3
+      autoscaleMax: 5
+      cpu:
+        targetAverageUtilization: 500
+    telemetry:
+      enabled: false
+      v2:
+        enabled: true
+        prometheus:
+          enabled: true
+    gateways:
+      istio-ingressgateway:
+        injectionTemplate: gateway
+
