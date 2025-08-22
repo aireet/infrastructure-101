@@ -2,8 +2,6 @@
 
 ## 概述
 
-本文档详细说明了 `cluster_01.yaml` 配置文件的结构和配置项含义。该配置文件使用 `IstioOperator` 自定义资源来配置 Istio 1.21.0 服务网格。
-
 **官方文档参考：** https://istio.io/latest/docs/reference/config/istio.operator.v1alpha1/
 
 ## 配置文件结构
