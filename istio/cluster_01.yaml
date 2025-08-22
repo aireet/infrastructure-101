@@ -25,7 +25,7 @@ spec:
 
     - name: ingress-http
       namespace: ingress-istio
-      enabled: true
+      enabled: false
       label:
         app: ingress-http
       k8s:
@@ -82,7 +82,7 @@ spec:
 
     - name: ingress-grpc
       namespace: ingress-istio
-      enabled: true
+      enabled: false
       label:
         app: ingress-grpc
       k8s:
@@ -140,7 +140,7 @@ spec:
 
     - name: ingress-websocket
       namespace: ingress-istio
-      enabled: true
+      enabled: false
       label:
         app: ingress-websocket
       k8s:
