@@ -15,9 +15,9 @@ spec:
   selector:
     istio: istio-ingressgateway-http
   ports:
-  - port: 80
+  - port: 8080
     name: http
-  - port: 443
+  - port: 8443
     name: https
 ---
 apiVersion: apps/v1
@@ -35,6 +35,7 @@ spec:
         # 选择网关注入模板（而不是默认的 Sidecar 模板）
         inject.istio.io/templates: gateway
       labels:
+        app: istio-ingressgateway-http
         # 为网关设置唯一标签。这是确保 Gateway 可以选择此工作负载所必需的
         istio: istio-ingressgateway-http
         # 启用网关注入。如果后续连接到修订版的控制平面，请替换为 `istio.io/rev: revision-name`
@@ -64,8 +65,8 @@ metadata:
   labels:
     app: istio-ingressgateway-http
 spec:
-  minReplicas: 3
-  maxReplicas: 8
+  minReplicas: 1
+  maxReplicas: 1
   metrics:
     - resource:
         name: cpu
