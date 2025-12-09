@@ -68,7 +68,7 @@ apiVersion: v1
 data:
   cni-conf.json: |
     {
-      "name": "cbr0",
+      "name": "flannel",
       "cniVersion": "1.0.0",
       "plugins": [
         {
@@ -90,7 +90,7 @@ data:
     {
       "Network": "172.25.0.0/16",
       "Backend": {
-        "Type": "host-gw"
+        "Type": "vxlan"
       }
     }
 kind: ConfigMap
