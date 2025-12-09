@@ -1,0 +1,123 @@
+admin:
+  address:
+    socket_address:
+      address: 0.0.0.0
+      port_value: 9901
+
+static_resources:
+  listeners:
+  - name: es_proxy_listener
+    address:
+      socket_address:
+        address: 0.0.0.0
+        port_value: 9092
+    filter_chains:
+    - filters:
+      - name: envoy.filters.network.http_connection_manager
+        typed_config:
+          "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+          stat_prefix: es_proxy
+          codec_type: AUTO
+          route_config:
+            name: es_route_config
+            virtual_hosts:
+            - name: es_virtual_host
+              domains: ["*"]
+              routes:
+              - match:
+                  prefix: "/"
+                route:
+                  cluster: es_cluster
+                  timeout: 300s
+         
+          http_filters:
+          #  针对全局限流 20000 qps
+          - name: rate-limit-all
+            typed_config:
+              "@type": type.googleapis.com/udpa.type.v1.TypedStruct
+              type_url: type.googleapis.com/envoy.extensions.filters.http.local_ratelimit.v3.LocalRateLimit
+              value:
+                stat_prefix: es_local_rate_limit
+                token_bucket:
+                  max_tokens: 20000
+                  tokens_per_fill: 20000
+                  fill_interval: 1s
+                filter_enabled:
+                  runtime_key: rate-limit-all
+                  default_value:
+                    numerator: 100
+                    denominator: HUNDRED
+                filter_enforced:
+                  runtime_key: rate-limit-all
+                  default_value:
+                    numerator: 100
+                    denominator: HUNDRED
+                response_headers_to_add:
+                - append: false
+                  header:
+                    key: echo-es-rate-limit
+                    value: '20000'
+
+          #  针对某个index 限流 200 qps
+          - name: rate-limit-all-order-product
+            typed_config:
+              "@type": type.googleapis.com/udpa.type.v1.TypedStruct
+              type_url: type.googleapis.com/envoy.extensions.filters.http.local_ratelimit.v3.LocalRateLimit
+              value:
+                stat_prefix: order_product_rate_limit
+                token_bucket:
+                  max_tokens: 2
+                  tokens_per_fill: 2
+                  fill_interval: 60s
+                filter_enabled:
+                  runtime_key: rate-limit-all-order-product
+                  default_value:
+                    numerator: 100
+                    denominator: HUNDRED
+                filter_enforced:
+                  runtime_key: rate-limit-all-order-product
+                  default_value:
+                    numerator: 100
+                    denominator: HUNDRED
+                response_headers_to_add:
+                - append: false
+                  header:
+                    key: echo-es-rate-limit
+                    value: '200'
+                stage: 1
+                match:
+                  path_specifier:
+                    prefix: "/c2c-order-products/"
+          
+          - name: envoy.filters.http.router
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
+              dynamic_stats: true
+          access_log:
+          - name: envoy.access_loggers.stdout
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.access_loggers.stream.v3.StdoutAccessLog
+              log_format:
+                text_format: "[%START_TIME%] %REQ(:METHOD)% %REQ(X-ENVOY-ORIGINAL-PATH?:PATH)% %RESPONSE_CODE% %RESPONSE_FLAGS% %BYTES_RECEIVED% %BYTES_SENT% %DURATION% %RESP(X-ENVOY-UPSTREAM-SERVICE-TIME)% \"%REQ(X-FORWARDED-FOR)%\" \"%REQ(USER-AGENT)%\" \"%REQ(X-REQUEST-ID)%\" \"%REQ(:AUTHORITY)%\" \"%UPSTREAM_HOST%\"\n"
+
+  clusters:
+  - name: es_cluster
+    connect_timeout: 30s
+    type: STRICT_DNS
+    lb_policy: LEAST_REQUEST
+
+    common_lb_config:
+      healthy_panic_threshold:
+        value: 0
+
+    load_assignment:
+      cluster_name: es_cluster
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: elasticsearch
+                port_value: 9200
+
+

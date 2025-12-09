@@ -1,0 +1,39 @@
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: http-router
+  namespace: ingress-istio
+spec:
+  selector:
+    app: istio-ingressgateway-http
+  servers:
+    - hosts:
+        - grpc.dispatcher-v3.sh
+      port:
+        name: http
+        number: 8080
+        protocol: HTTP
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: http-router
+  namespace: ingress-istio
+spec:
+  exportTo:
+    - .
+  gateways:
+    - http-router
+  hosts:
+    - api.echolab.com
+  http:    
+    - headers:
+        response:
+          remove:
+            - x-echo-pattern
+      match:
+        - authority:
+            prefix: grpc.dispatcher-v3.sh
+      route:
+        - destination:
+            host: openresty
