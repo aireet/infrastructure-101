@@ -43,11 +43,11 @@ else
 fi
 
 # 🎯 版本定义
-K8S_VERSION=1.28
-K8S_CNI_VERSION=1.2.0
-CRI_TOOLS_VERSION=1.28.0
-KUBECTL_VERSION=1.28.0
-KUBELET_VERSION=1.28.12
+K8S_VERSION=1.33
+K8S_CNI_VERSION=1.6.0
+CRI_TOOLS_VERSION=1.33.0
+KUBECTL_VERSION=1.33.6
+KUBELET_VERSION=1.33.6
 
 # 🌐 下载地址前缀
 BASE_URL="https://mirrors.aliyun.com/kubernetes-new/core/stable/v${K8S_VERSION}/rpm/x86_64"
@@ -62,7 +62,7 @@ PKG_NAMES=(
 )
 
 declare -A PKG_VERSIONS=(
-  [kubernetes-cni]="${K8S_CNI_VERSION}-150500.2.1"
+  [kubernetes-cni]="${K8S_CNI_VERSION}-150500.1.1"
   [cri-tools]="${CRI_TOOLS_VERSION}-150500.1.1"
   [kubectl]="${KUBECTL_VERSION}-150500.1.1"
   [kubelet]="${KUBELET_VERSION}-150500.1.1"
