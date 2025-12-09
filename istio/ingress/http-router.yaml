@@ -8,7 +8,7 @@ spec:
     app: istio-ingressgateway-http
   servers:
     - hosts:
-        - api.echolab.com
+        - grpc.dispatcher-v3.sh
       port:
         name: http
         number: 8080
@@ -29,13 +29,11 @@ spec:
   http:    
     - headers:
         response:
-          add:
-            proxy-by-gateway:  http-router
+          remove:
+            - x-echo-pattern
       match:
-        - uri:
-            prefix: /book-info/
-      rewrite:
-        uri: /
-      delegate:
-        name: entry-standalone-delegate
-        namespace: echolab
+        - authority:
+            prefix: grpc.dispatcher-v3.sh
+      route:
+        - destination:
+            host: openresty
