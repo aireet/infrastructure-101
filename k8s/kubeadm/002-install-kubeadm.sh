@@ -62,7 +62,7 @@ PKG_NAMES=(
 )
 
 declare -A PKG_VERSIONS=(
-  [kubernetes-cni]="${K8S_CNI_VERSION}-150500.2.1"
+  [kubernetes-cni]="${K8S_CNI_VERSION}-150500.1.1"
   [cri-tools]="${CRI_TOOLS_VERSION}-150500.1.1"
   [kubectl]="${KUBECTL_VERSION}-150500.1.1"
   [kubelet]="${KUBELET_VERSION}-150500.1.1"

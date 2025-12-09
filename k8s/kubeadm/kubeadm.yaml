@@ -1,11 +1,11 @@
-apiVersion: kubeadm.k8s.io/v1beta3
+apiVersion: kubeadm.k8s.io/v1beta4
 kind: InitConfiguration
 nodeRegistration:
   name: 192.168.6.149
 ---
-apiVersion: kubeadm.k8s.io/v1beta3
+apiVersion: kubeadm.k8s.io/v1beta4
 kind: ClusterConfiguration
-kubernetesVersion: v1.28.12
+kubernetesVersion: v1.33.6
 clusterName: cluster_01
 networking:
   podSubnet: "172.31.0.0/16"
