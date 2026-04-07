@@ -130,11 +130,11 @@ fi
 # 🚀 启动并设置 kubelet 开机自启
 log_step "配置 kubelet 服务..."
 log_info "启用并启动 kubelet 服务..."
-if systemctl enable --now kubelet; then
+systemctl enable kubelet 2>/dev/null || true
+if systemctl start kubelet; then
     log_success "kubelet 服务启动成功"
 else
-    log_error "kubelet 服务启动失败"
-    exit 4
+    log_warning "kubelet 启动失败（kubeadm init 前属正常现象，可忽略）"
 fi
 
 # 🎉 完成提示
