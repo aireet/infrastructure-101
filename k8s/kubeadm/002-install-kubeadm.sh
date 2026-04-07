@@ -100,9 +100,16 @@ for pkg in "${PKG_NAMES[@]}"; do
     log_success "下载完成: ${pkg}"
     
     log_info "正在安装 ${pkg}..."
-    if ! yum install -y "$rpm_file" && ! yum downgrade -y "$rpm_file"; then
-        log_error "安装失败: ${pkg}"
-        exit 3
+    if ! yum install -y "$rpm_file"; then
+        # 已安装相同版本时 yum 返回非零，用 rpm 确认是否已装好
+        installed=$(rpm -q "$pkg" 2>/dev/null || true)
+        expected="${pkg}-${PKG_VERSIONS[$pkg]}.x86_64"
+        if [[ "$installed" == "$expected" ]]; then
+            log_info "${pkg} 已是目标版本，跳过"
+        else
+            log_error "安装失败: ${pkg} (已安装: ${installed}, 期望: ${expected})"
+            exit 3
+        fi
     fi
     log_success "安装完成: ${pkg}"
     
