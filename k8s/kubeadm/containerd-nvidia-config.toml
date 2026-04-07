@@ -1,0 +1,16 @@
+version = 2
+
+[plugins."io.containerd.grpc.v1.cri"]
+  sandbox_image = "docker-register-registry-vpc.cn-shanghai.cr.aliyuncs.com/well-known/pause:3.9"
+
+[plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc]
+  runtime_type = "io.containerd.runc.v2"
+
+[plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]
+  SystemdCgroup = false
+
+[plugins."io.containerd.grpc.v1.cri".containerd.runtimes."nvidia"]
+  runtime_type = "io.containerd.runc.v2"
+[plugins."io.containerd.grpc.v1.cri".containerd.runtimes."nvidia".options]
+  BinaryName = "/usr/bin/nvidia-container-runtime"
+  SystemdCgroup = false
