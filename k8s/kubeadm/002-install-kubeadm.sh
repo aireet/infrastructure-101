@@ -100,7 +100,7 @@ for pkg in "${PKG_NAMES[@]}"; do
     log_success "下载完成: ${pkg}"
     
     log_info "正在安装 ${pkg}..."
-    if ! yum install -y "$rpm_file"; then
+    if ! yum install -y --allow-downgrade "$rpm_file"; then
         log_error "安装失败: ${pkg}"
         exit 3
     fi
